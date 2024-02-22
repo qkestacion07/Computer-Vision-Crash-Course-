@@ -35,10 +35,11 @@ def read_images(path, sz=None):
 
 
 def face_rec():
-  names = ['Friend1', 'Friend2'] # Put your names here for faces to recognize
-  if len(sys.argv) < 2:
+  names = ['Friend1', 'Friend2','Friend3'] # Put your names here for faces to recognize
+  """if len(sys.argv) < 2:
     print("USAGE: facerec_demo.py </path/to/images> [</path/to/store/images/at>]")
     sys.exit()
+"""
 
   [X, y] = read_images(sys.orig_argv[1])
   y = np.asarray(y, dtype=np.int32)
