@@ -1,5 +1,7 @@
 import cv2
 import os
+##Provides input for the face recognition 
+##with the help of face detection
 
 def clear_folder(folder):
     """
