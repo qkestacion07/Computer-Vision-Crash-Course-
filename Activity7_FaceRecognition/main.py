@@ -1,80 +1,52 @@
-import numpy as np
-import os
-import errno
-import sys
 import cv2
+import os
 
-def read_images(path, sz=None):
-  c = 0
-  X, y = [], []
+def clear_folder(folder):
+    """
+    Deletes all images in the folder
+    This assumes there are only files and 
+    no directories in the folder
+    """
+    print(f"{folder} cleared")
+    for file in os.listdir(folder):
+        file_path = os.path.join(folder, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
-  for dirname, dirnames, filenames in os.walk(path):
-    for subdirname in dirnames:
-      subject_path = os.path.join(dirname, subdirname)
-      for filename in os.listdir(subject_path):
-        try:
-          if(filename == ".directory"):
-            continue
-          filepath = os.path.join(subject_path, filename)
-          im = cv2.imread(os.path.join(subject_path, filename), cv2.IMREAD_GRAYSCALE)
+def detect(folder_path, save_folder):
+    """"Takes the roi of the image and saves it"""
+    clear_folder(save_folder)
+    face_cascade = cv2.CascadeClassifier('Activity7_FaceRecognition/haarcascade_frontalface_default.xml')
+    
+    image_files = []
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith(('.png', '.jpg', '.jpeg')):
+            image_files.append(os.path.join(folder_path, file_name))
+    
+    i = 1 #counter of input images
+    j = 1 #counter of saved images
+    n = len(image_files)
+    while True:
+        print(i)
+        image = cv2.imread(image_files[i-1])
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-          # Resize the images to the prescribed size
-          if (sz is not None):
-            im = cv2.resize(im, (200,200))
-
-          X.append(np.asarray(im, dtype=np.uint8))
-          y.append(c)
-
-        except IOError as e:
-          print(f"I/O Error({e.errno}): {e.strerror}")
-        except:
-          print("Unexpected error:", sys.exc_info()[0])
-          raise
-      c = c+1
-  return [X, y]
-
-
-def face_rec():
-  names = ['Friend1', 'Friend2','Friend3'] # Put your names here for faces to recognize
-  """if len(sys.argv) < 2:
-    print("USAGE: facerec_demo.py </path/to/images> [</path/to/store/images/at>]")
-    sys.exit()
-"""
-
-  [X, y] = read_images(sys.orig_argv[1])
-  y = np.asarray(y, dtype=np.int32)
-
-  model = cv2.face.EigenFaceRecognizer_create()
-  model.train(X, y)
-
-  camera = cv2.VideoCapture(0)
-  face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
-  while True:
-    ret, img = camera.read()
-    if not ret:
-      break
-
-    faces = face_cascade.detectMultiScale(img, 1.3, 5)
-
-    for (x, y, w, h) in faces:
-      cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-      gray = cv2.cvtColor(img[y:y + h, x:x + w], cv2.COLOR_BGR2GRAY)
-      roi = cv2.resize(gray, (200, 200), interpolation=cv2.INTER_LINEAR)
-
-      try:
-        params = model.predict(roi)
-        label = names[params[0]]
-        cv2.putText(img, label + ", " + str(params[1]), (x, y - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-      except:
-        continue
-
-    cv2.imshow("camera", img)
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-      break
-
-  camera.release()
-  cv2.destroyAllWindows()
-
+        faces = face_cascade.detectMultiScale(gray, 1.1, 5)
+        if len(faces) == 0:
+            print(f"No faces detected in {image_files[i-1]}")
+         
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y + h, x:x + w]
+            cv2.imwrite(os.path.join(save_folder, f'image_{j}.jpg'), roi_gray)
+            j += 1
+        i += 1
+        if i>n:
+            break
+        
 if __name__ == "__main__":
-  face_rec()
+    root = 'Activity7_FaceRecognition/images/'
+    students = [['Marie','Hernandez'],['Kenneth','Estacion'],
+                ['Ed','Figueroa'],['Jericho','Ecubin']]
+    for (firstname, lastname) in students:
+      print(lastname)
+      detect(root+firstname,root+lastname)
