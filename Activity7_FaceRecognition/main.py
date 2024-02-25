@@ -46,7 +46,7 @@ def video_detect(video_files, save_folder):
                 break
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+            faces = face_cascade.detectMultiScale(gray, 1.1, 5)
 
             for (x, y, w, h) in faces:
                 roi_gray = gray[y:y + h, x:x + w]
