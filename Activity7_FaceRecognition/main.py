@@ -80,10 +80,11 @@ def image_detect(image_files, save_folder):
             break
         
 if __name__ == "__main__":
-    root = 'Activity7_FaceRecognition/images/'
+    root = 'Activity7_FaceRecognition/'
     students = [['Marie','Hernandez'],['Kenneth','Estacion'],
-                ['Ed','Figueroa'],['Jericho','Ecubin']]
-    """for (firstname, lastname) in students:
+                ['Ed','Figueroa'],['Jericho','Ecubin'],
+                ['Jose','Figuerras']]
+    for (firstname, lastname) in students:
       print(lastname)
-      scan_files(root+firstname,root+lastname)"""
+      scan_files(root+f'raw_images/{firstname}',root+f'images/{lastname}')
     
